@@ -1,11 +1,10 @@
 package tn.esprit.spring.kaddem.entities;
 
+import jakarta.persistence.*;
 import lombok.ToString;
 
 import java.io.Serializable;
 import java.util.Date;
-
-import javax.persistence.*;
 
 @Entity
 @ToString
