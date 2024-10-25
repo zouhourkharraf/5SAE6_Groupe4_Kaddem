@@ -1,6 +1,8 @@
 package tn.esprit.spring.kaddem.controllers;
 
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import tn.esprit.spring.kaddem.entities.Etudiant;
@@ -12,6 +14,8 @@ import java.util.List;
 @AllArgsConstructor
 @RequestMapping("/etudiant")
 public class EtudiantRestController {
+	private static final Logger logger = LoggerFactory.getLogger(ContratRestController.class);
+
 	@Autowired
 	IEtudiantService etudiantService;
 	// http://localhost:8089/Kaddem/etudiant/retrieve-all-etudiants
@@ -29,7 +33,11 @@ public class EtudiantRestController {
 	// http://localhost:8089/Kaddem/etudiant/add-etudiant
 	@PostMapping("/add-etudiant")
 	public Etudiant addEtudiant(@RequestBody Etudiant e) {
+		logger.info("Request to add a new student: {} {}", e.getNomE(), e.getPrenomE());
+
 		Etudiant etudiant = etudiantService.addEtudiant(e);
+		logger.info("Student added successfully with ID: {}", etudiant.getIdEtudiant());
+
 		return etudiant;
 	}
 
