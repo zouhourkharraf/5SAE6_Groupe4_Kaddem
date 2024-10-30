@@ -16,6 +16,7 @@ import tn.esprit.spring.kaddem.repositories.EtudiantRepository;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 @Service
@@ -50,12 +51,31 @@ public class EtudiantServiceImpl implements IEtudiantService{
 	etudiantRepository.delete(e);
 	}
 
-	public void assignEtudiantToDepartement (Integer etudiantId, Integer departementId){
+	/*public void assignEtudiantToDepartement (Integer etudiantId, Integer departementId){
         Etudiant etudiant = etudiantRepository.findById(etudiantId).orElse(null);
         Departement departement = departementRepository.findById(departementId).orElse(null);
         etudiant.setDepartement(departement);
         etudiantRepository.save(etudiant);
+	}*/
+
+	@Transactional
+	public void assignEtudiantToDepartement(Integer etudiantId, Integer departementId) {
+		// Récupérer l'étudiant, ou lever une exception si non trouvé
+		Etudiant etudiant = etudiantRepository.findById(etudiantId)
+				.orElseThrow(() -> new NoSuchElementException("Étudiant avec l'ID " + etudiantId + " non trouvé"));
+
+		// Récupérer le département, ou lever une exception si non trouvé
+		Departement departement = departementRepository.findById(departementId)
+				.orElseThrow(() -> new NoSuchElementException("Département avec l'ID " + departementId + " non trouvé"));
+
+		// Assigner l'étudiant au département
+		etudiant.setDepartement(departement);
+
+		// Enregistrer les modifications
+		etudiantRepository.save(etudiant);
 	}
+
+
 	@Transactional
 	public Etudiant addAndAssignEtudiantToEquipeAndContract(Etudiant e, Integer idContrat, Integer idEquipe){
 		Contrat c=contratRepository.findById(idContrat).orElse(null);
