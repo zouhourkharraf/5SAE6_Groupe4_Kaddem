@@ -82,14 +82,17 @@
 
     <distributionManagement>
         <repository>
-            <id>deploymentRepo</id>
+            <id>deploymentRepo</id> <!-- This should match your server ID -->
+            <name>Nexus Repository</name>
             <url>http://localhost:8081/repository/maven-releases/</url>
         </repository>
         <snapshotRepository>
-            <id>snapshotRepo</id>
+            <id>deploymentRepo</id> <!-- This should match your server ID -->
+            <name>Nexus Snapshot Repository</name>
             <url>http://localhost:8081/repository/maven-snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
+
 
 
 
