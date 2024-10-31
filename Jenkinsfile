@@ -25,7 +25,7 @@ pipeline {
         stage('Code Analysis with SonarQube') {
             steps {
                 withSonarQubeEnv('SonarQube') {
-                    sh "${MAVEN_HOME}/bin/mvn sonar:sonar -Dsonar.projectKey=ProjetSonarKaddemKey -Dsonar.login=${SONAR_TOKEN}"
+                    sh "${MAVEN_HOME}/bin/mvn sonar:sonar -Dsonar.projectKey=ProjetSonarKaddemKey -Dsonar.login=${SONAR_TOKEN} -Dsonar.jacoco.reportPath=target/jacoco.exec"
                 }
             }
         }
