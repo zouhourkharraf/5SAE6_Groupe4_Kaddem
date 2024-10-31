@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         GIT_REPO_URL = 'https://github.com/zouhourkharraf/5SAE6_Groupe4_Kaddem.git'
-        MAVEN_HOME = '/usr/bin/mvn'
+        MAVEN_HOME = '/usr/share/maven'
         SONARQUBE_SERVER = 'SonarQube'
         SONAR_TOKEN = credentials('sonar-token') // Nom du credential Jenkins pour SonarQube
     }
