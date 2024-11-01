@@ -24,6 +24,12 @@ pipeline {
             }
         }
 
+        stage('Generate Jacoco Report') {
+            steps {
+                sh "${MAVEN_HOME}/bin/mvn jacoco:report"
+            }
+        }
+
         stage('Code Analysis with SonarQube') {
             steps {
                 withSonarQubeEnv('SonarQube') {
