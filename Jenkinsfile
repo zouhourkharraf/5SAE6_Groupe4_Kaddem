@@ -16,11 +16,9 @@ pipeline {
             }
         }
 
-        stage('Build and Compile') {
+        stage('Build and Test') {
             steps {
                 sh "${MAVEN_HOME}/bin/mvn clean test"
-                 // Lister les fichiers dans le répertoire target
-                 sh 'ls -la target/'
             }
         }
 
