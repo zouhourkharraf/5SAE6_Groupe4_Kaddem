@@ -18,7 +18,7 @@ pipeline {
             }
         }
 
-        }
+        
         stage('MAVEN CLEAN') {
             steps {
                 sh 'mvn clean'
