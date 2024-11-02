@@ -274,7 +274,7 @@ public void testGetEtudiantsByDepartement_Success() {
     assertEquals(2, result.size(), "La liste devrait contenir deux étudiants");
     assertEquals(etudiants, result, "La liste retournée devrait correspondre à la liste d'étudiants prévue");
 }
-//Test échoué ******
+//Test échoué 
 
 
 
