@@ -1,32 +1,7 @@
 version: '3.8'
 
 services:
-  mysqldb:
-    image: mysql:5.7
-    restart: unless-stopped
-    environment:
-      - MYSQL_ROOT_PASSWORD=root
-      - MYSQL_DATABASE=kaddem
-    ports:
-      - "3306:3306"
-    volumes:
-      - db:/var/lib/mysql
-
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin
-    restart: unless-stopped
-    ports:
-      - "8080:80"
-    environment:
-      PMA_HOST: mysqldb
-      PMA_USER: root
-      PMA_PASSWORD: root
-    depends_on:
-      - mysqldb
-
   kaddemNewv0.1:
-    depends_on:
-      - mysqldb
     image: jobjob1/kaddem:1.0.0
     restart: on-failure
     build:
