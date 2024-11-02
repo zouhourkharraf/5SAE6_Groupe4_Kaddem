@@ -17,11 +17,7 @@ pipeline {
                     credentialsId: 'github-creds' // Uncomment if you need credentials
             }
         }
-        stage('DOCKER StartUP') {
-            steps {
-                sh 'docker compose down'
-                sh 'docker compose up -d'
-            }
+
         }
         stage('MAVEN CLEAN') {
             steps {
@@ -64,6 +60,12 @@ pipeline {
             }
         }
 
+        stage('DOCKER StartUP') {
+            steps {
+                sh 'docker compose down'
+                sh 'docker compose up -d'
+            }
+        }
         stage('Docker Build & Push') {
             steps {
                 script {
