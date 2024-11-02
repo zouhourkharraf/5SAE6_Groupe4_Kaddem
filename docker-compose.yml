@@ -27,7 +27,7 @@ services:
   kaddemNewv0.1:
     depends_on:
       - mysqldb
-    image: jobjob1/devopsproject:1.0.0
+    image: jobjob1/kaddem:1.0.0
     restart: on-failure
     build:
       context: .
