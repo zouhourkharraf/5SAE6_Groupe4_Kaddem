@@ -1,4 +1,5 @@
-FROM openjdk:17-jdk-alpine
-EXPOSE 8082
-ADD target/kaddem-0.1.jar kaddem-0.1.jar
-ENTRYPOINT ["java","-jar","/kaddem-1.0.jar"]
+FROM openjdk:17-jdk-slim
+WORKDIR /app
+COPY target/kaddem-1.0.0.jar app.jar
+EXPOSE 8089
+ENTRYPOINT ["java", "-jar", "/app/app.jar"]
