@@ -256,7 +256,7 @@ public void testAssignEtudiantToDepartement_Failure() {
 // ******************** Tester la méthode addAndAssignEtudiantToEquipeAndContract
 //Test réussi
 
-//Test échoué
+//Test échoué **
 
 // ******************** Tester la méthode getEtudiantsByDepartement
 //Test réussi
