@@ -37,12 +37,16 @@ pipeline {
         }
     }
 
-    post {
-        success {
-            echo 'Pipeline exécuté avec succès'
+     post {
+            success {
+                mail to: 'zouhour.kharraf1@esprit.tn',
+                     subject: "Succès de l'exécution : ${currentBuild.fullDisplayName}",
+                     body: "Le build a réussi ! Voir les détails à ${env.BUILD_URL}"
+            }
+            failure {
+                mail to: 'zouhour.kharraf1@esprit.tn',
+                     subject: "Échec de l'exécution : ${currentBuild.fullDisplayName}",
+                     body: "Le build a échoué ! Voir les détails à ${env.BUILD_URL}"
+            }
         }
-        failure {
-            echo 'Pipeline échoué'
-        }
-    }
 }
