@@ -83,8 +83,8 @@
     <distributionManagement>
         <repository>
             <id>deploymentRepo</id>
-
-            <url>http://localhost:8081/repository/maven-snapshots/</url> <!-- Vérifiez bien l'URL -->
+            <name>Nexus Repository</name>
+            <url>http://localhost:8081/repository/maven-snapshots/</url>
         </repository>
     </distributionManagement>
 
