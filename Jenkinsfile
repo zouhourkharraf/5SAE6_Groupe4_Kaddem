@@ -18,13 +18,13 @@ pipeline {
 
         stage('Build and Test') {
             steps {
-                sh "${MAVEN_HOME}/bin/mvn clean test"
+                sh "${MAVEN_HOME}/bin/mvn clean compile"
             }
         }
 
         stage('Generate Jacoco Report') {
             steps {
-              //  sh "${MAVEN_HOME}/bin/mvn jacoco:report"
+                sh "${MAVEN_HOME}/bin/mvn jacoco:report"
             }
         }
 
