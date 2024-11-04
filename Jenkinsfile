@@ -40,7 +40,7 @@ pipeline {
      post {
             success {
                 mail to: 'zouhour.kharraf1@esprit.tn',
-                     from: 'zeinebmeliti@gmail.com',
+                     from: 'Kaddem Devops <zeinebmeliti@gmail.com>',
                      subject: "Succès de l'exécution : ${currentBuild.fullDisplayName}",
                      body: "Le build a réussi ! Voir les détails à ${env.BUILD_URL}"
             }
