@@ -24,7 +24,7 @@ pipeline {
 
         stage('Generate Jacoco Report') {
             steps {
-                sh "${MAVEN_HOME}/bin/mvn jacoco:report"
+              //  sh "${MAVEN_HOME}/bin/mvn jacoco:report"
             }
         }
 
