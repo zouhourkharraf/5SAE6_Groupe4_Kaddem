@@ -35,6 +35,17 @@ pipeline {
                 }
             }
         }
+
+         stage('Deploy to Nexus') {
+             steps {
+                 withCredentials([usernamePassword(credentialsId: 'nexus-credentials', usernameVariable: 'NEXUS_USER', passwordVariable: 'NEXUS_PASS')]) {
+                     sh "${MAVEN_HOME}/bin/mvn deploy -DskipTests=true -DaltDeploymentRepository=deploymentRepo::default::http://10.0.2.15:8081/repository/maven-releases/"
+                 }
+             }
+         }
+
+
+
     }
 
      post {
