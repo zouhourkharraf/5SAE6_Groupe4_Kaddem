@@ -59,6 +59,8 @@
 
     <!-- Configuration du build -->
     <build>
+        <finalName>5SAE6-Groupe4-kaddem</finalName>
+
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
@@ -92,6 +94,7 @@
                     </execution>
                 </executions>
             </plugin>
+
 
         </plugins>
     </build>
