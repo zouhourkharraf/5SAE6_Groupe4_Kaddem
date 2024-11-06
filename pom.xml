@@ -59,13 +59,13 @@
 
     <!-- Configuration du build -->
     <build>
-        <finalName>5SAE6-Groupe4-kaddem</finalName>
-
         <plugins>
+
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
+                    <finalName>5SAE6-Groupe4-kaddem</finalName>
                     <excludes>
                         <exclude>
                             <groupId>org.projectlombok</groupId>
@@ -74,6 +74,7 @@
                     </excludes>
                 </configuration>
             </plugin>
+
 
             <plugin>
                 <groupId>org.jacoco</groupId>
