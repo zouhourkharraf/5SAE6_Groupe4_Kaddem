@@ -13,20 +13,8 @@ pipeline {
 
                 stage('Greeting from Agent 2') {
                     agent { label 'agent2' }
-                    stages {
-                        stage('Greeting') {
-                            steps {
-                                echo 'Greetings from Agent 2! Ready for action!'
-                            }
-                        }
-                        stage('Git Pull on Agent 2') {
-                            steps {
-                                echo 'Git Pulling........'
-                                git branch: 'EzzineWael_5SAE6_Groupe4',
-                                    url: 'https://github.com/zouhourkharraf/5SAE6_Groupe4_Kaddem',
-                                    credentialsId: 'github-creds'
-                            }
-                        }
+                    steps {
+                        echo 'Greetings from Agent 2! Ready for action!'
                     }
                 }
             }
@@ -63,9 +51,7 @@ pipeline {
                         stage('Run Unit Tests') {
                             steps {
                                 echo 'Running Unit Tests: '
-                                //sh 'docker compose up -d'
                                 sh 'mvn test -X'
-                                //sh 'docker compose down'
                             }
                         }
 
@@ -73,12 +59,6 @@ pipeline {
                             steps {
                                 echo 'Création du livrable : '
                                 sh 'mvn package -DskipTests'
-                            }
-                        }
-
-                        stage('Maven Install') {
-                            steps {
-                                //sh 'mvn install'
                             }
                         }
 
@@ -139,35 +119,35 @@ pipeline {
                 stage('Agent 2') {
                     agent { label 'agent2' }
                     stages {
-                        stage('Agent 2 Greeting') {
+                        stage('Git Pull on Agent 2') {
                             steps {
-                                echo 'Hello from Agent 2'
+                                echo 'Git Pulling........'
+                                git branch: 'EzzineWael_5SAE6_Groupe4',
+                                    url: 'https://github.com/zouhourkharraf/5SAE6_Groupe4_Kaddem',
+                                    credentialsId: 'github-creds'
                             }
                         }
 
                         stage('Maven Clean') {
                             steps {
                                 echo 'Nettoyage du Projet : '
-                                    sh 'mvn clean'
-
+                                sh 'mvn clean'
                             }
                         }
 
                         stage('Maven Compile') {
                             steps {
                                 echo 'Construction du Projet : '
-                                    sh 'mvn compile'
-
+                                sh 'mvn compile'
                             }
                         }
 
                         stage('Run Unit Tests') {
                             steps {
                                 echo 'Running Unit Tests: '
-                                    sh 'sudo docker compose up -d'
-                                    sh 'mvn test -X'
-                                    sh 'sudo docker compose down'
-
+                                sh 'docker compose up -d'
+                                sh 'mvn test -X'
+                                sh 'docker compose down'
                             }
                         }
 
@@ -181,8 +161,7 @@ pipeline {
                         stage('JaCoCo Code Coverage') {
                             steps {
                                 echo 'Generating JaCoCo Code Coverage Report: '
-                                    sh 'mvn jacoco:report'
-
+                                sh 'mvn jacoco:report'
                             }
                         }
 
