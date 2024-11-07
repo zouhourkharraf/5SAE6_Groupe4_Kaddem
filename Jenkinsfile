@@ -27,7 +27,7 @@ pipeline {
                     stages {
                         stage('Git Pull on Agent 1') {
                             steps {
-                                echo 'Git Pulling........'
+                                echo 'Performing Git Pull...'
                                 git branch: 'EzzineWael_5SAE6_Groupe4',
                                     url: 'https://github.com/zouhourkharraf/5SAE6_Groupe4_Kaddem',
                                     credentialsId: 'github-creds'
@@ -36,32 +36,31 @@ pipeline {
 
                         stage('Maven Clean') {
                             steps {
-                                echo 'Nettoyage du Projet : '
+                                echo 'Cleaning the project...'
                                 sh 'mvn clean'
                             }
                         }
 
                         stage('Maven Compile') {
                             steps {
-                                echo 'Construction du Projet : '
+                                echo 'Compiling the project...'
                                 sh 'mvn compile'
                             }
                         }
 
-
-
                         stage('Maven Package') {
                             steps {
-                                echo 'Création du livrable : '
+                                echo 'Creating package...'
                                 sh 'mvn package -DskipTests'
                             }
                         }
-                       stage('Docker-Compose') {
-                                            steps {
-                                                sh 'pwd'
-                                                sh 'docker compose up -d'
-                                            }
-                       }
+
+                        stage('Docker-Compose') {
+                            steps {
+                                sh 'pwd'
+                                sh 'docker compose up -d'
+                            }
+                        }
 
                         stage('SonarQube Analysis') {
                             steps {
@@ -72,7 +71,7 @@ pipeline {
                             }
                         }
 
-                        stage("Quality Gate") {
+                        stage('Quality Gate') {
                             steps {
                                 timeout(time: 2, unit: 'MINUTES') {
                                     waitForQualityGate abortPipeline: true
@@ -86,59 +85,59 @@ pipeline {
                             }
                         }
 
-                        stage('Image Spring') {
+                        stage('Build Spring Image') {
                             steps {
-                                echo 'compose down so we can delete the old images'
+                                echo 'Stopping existing containers and removing old images...'
                                 sh 'docker compose down'
                                 sh 'docker image rm cadevaccon/ezzine-wael-5sae6-kaddem-spring:1.0.0 || true'
-                                echo 'Création Image spring: '
+                                echo 'Creating new Docker image...'
                                 sh 'docker build -t cadevaccon/ezzine-wael-5sae6-kaddem-spring:1.0.0 .'
                             }
                         }
+
                         stage('Run Unit Tests') {
                             steps {
-                                echo 'Running Unit Tests: '
+                                echo 'Running unit tests...'
                                 sh 'mvn test -X'
                             }
                         }
 
+                        stage('Publish Test Results') {
+                            steps {
+                                echo 'Publishing test results...'
+                                junit '**/target/surefire-reports/*.xml'
+                            }
+                        }
 
-                       stage('Publish Test Results') {
-                                        steps {
-                                            echo 'Publishing Test Results: '
-                                            junit '**/target/surefire-reports/*.xml'
-                                        }
-                                    }
+                        stage('JaCoCo Code Coverage') {
+                            steps {
+                                echo 'Generating JaCoCo code coverage report...'
+                                sh 'mvn jacoco:report'
+                            }
+                        }
 
-                                    stage('JaCoCo Code Coverage') {
-                                        steps {
-                                            echo 'Generating JaCoCo Code Coverage Report: '
-                                            sh 'mvn jacoco:report'
-                                        }
-                                    }
+                        stage('Publish JaCoCo Report') {
+                            steps {
+                                jacoco execPattern: '**/target/jacoco.exec',
+                                       classPattern: '**/target/classes',
+                                       sourcePattern: '**/src/main/java',
+                                       inclusionPattern: '**/*.class',
+                                       exclusionPattern: '**/*Test*.class'
+                            }
+                        }
+                    }
 
-                                    stage('Publish JaCoCo Report') {
-                                        steps {
-                                            jacoco execPattern: '**/target/jacoco.exec',
-                                                   classPattern: '**/target/classes',
-                                                   sourcePattern: '**/src/main/java',
-                                                   inclusionPattern: '**/*.class',
-                                                   exclusionPattern: '**/*Test*.class'
-                                        }
-                                    }
-                       }
-                          stage('Push to Dockerhub') {
-                                                   steps {
-                                                       script {
-                                                           withCredentials([usernamePassword(credentialsId: 'DockerCreds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                                                               sh 'echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin'
-                                                           }
-                                                           sh 'docker push cadevaccon/ezzine-wael-5sae6-kaddem-spring:1.0.0'
-                                                           sh 'docker logout'
-                                                       }
-                                                   }
-                                               }
-
+                    stage('Push to Dockerhub') {
+                        steps {
+                            script {
+                                withCredentials([usernamePassword(credentialsId: 'DockerCreds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                                    sh 'echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin'
+                                }
+                                sh 'docker push cadevaccon/ezzine-wael-5sae6-kaddem-spring:1.0.0'
+                                sh 'docker logout'
+                            }
+                        }
+                    }
                 }
 
                 stage('Agent 2') {
@@ -146,20 +145,12 @@ pipeline {
                     stages {
                         stage('Git Pull on Agent 2') {
                             steps {
-                                echo 'Git Pulling........'
+                                echo 'Performing Git Pull...'
                                 git branch: 'EzzineWael_5SAE6_Groupe4',
                                     url: 'https://github.com/zouhourkharraf/5SAE6_Groupe4_Kaddem',
                                     credentialsId: 'github-creds'
                             }
                         }
-
-
-
-
-
-
-
-
                     }
                 }
             }
