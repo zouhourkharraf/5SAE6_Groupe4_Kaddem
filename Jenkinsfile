@@ -5,7 +5,7 @@ pipeline {
         stage('Greeting') {
             parallel {
                 stage('Greeting from Agent 1') {
-                    agent { label 'agent1 ' }
+                    agent { label 'agent1' }
                     steps {
                         echo 'Hello from Agent 1! Ready to go!'
                     }
@@ -59,7 +59,7 @@ pipeline {
                         stage('Maven Package') {
                             steps {
                                 echo 'Création du livrable : '
-                                    sh 'mvn package -DskipTests'
+                                sh 'mvn package -DskipTests'
                             }
                         }
 
@@ -74,9 +74,10 @@ pipeline {
                                 echo 'Analyse de la Qualité du Code : '
                                 withSonarQubeEnv('SonarQube servers') {
                                     sh 'mvn sonar:sonar -Dmaven.test.skip=true'
-                            }
+                                }
                             }
                         }
+
                         stage("Quality Gate") {
                             steps {
                                 timeout(time: 2, unit: 'MINUTES') {
@@ -130,7 +131,11 @@ pipeline {
                 stage('Agent 2') {
                     agent { label 'agent2' }
                     stages {
-
+                        stage('Agent 2 Greeting') {
+                            steps {
+                                echo 'hello from 2'
+                            }
+                        }
                     }
                 }
             }
