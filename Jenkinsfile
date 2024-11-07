@@ -33,17 +33,7 @@ pipeline {
                                     credentialsId: 'github-creds'
                             }
                         }
-                        stage('Image Spring') {
-                            steps {
-                                echo 'compose down so we can delete the old images'
-                                sh 'docker compose down'
-                                sh 'docker image rm cadevaccon/ezzine-wael-5sae6-kaddem-spring:1.0.0 || true'
-                                echo 'Création Image spring: '
-                                sh 'docker build -t cadevaccon/ezzine-wael-5sae6-kaddem-spring:1.0.0 .'
-                                 sh 'docker compose up -d'
 
-                            }
-                        }
                         stage('Maven Clean') {
                             steps {
                                 echo 'Nettoyage du Projet : '
@@ -58,12 +48,7 @@ pipeline {
                             }
                         }
 
-                        stage('Run Unit Tests') {
-                            steps {
-                                echo 'Running Unit Tests: '
-                                sh 'mvn test -X'
-                            }
-                        }
+
 
                         stage('Maven Package') {
                             steps {
@@ -71,6 +56,12 @@ pipeline {
                                 sh 'mvn package -DskipTests'
                             }
                         }
+                       stage('Docker-Compose') {
+                                            steps {
+                                                sh 'pwd'
+                                                sh 'docker compose up -d'
+                                            }
+                       }
 
                         stage('SonarQube Analysis') {
                             steps {
@@ -95,45 +86,59 @@ pipeline {
                             }
                         }
 
-
-
-                        stage('Push to Dockerhub') {
+                        stage('Image Spring') {
                             steps {
-                                script {
-                                    withCredentials([usernamePassword(credentialsId: 'DockerCreds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                                        sh 'echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin'
-                                    }
-                                    sh 'docker push cadevaccon/ezzine-wael-5sae6-kaddem-spring:1.0.0'
-                                    sh 'docker logout'
-                                }
+                                echo 'compose down so we can delete the old images'
+                                sh 'docker compose down'
+                                sh 'docker image rm cadevaccon/ezzine-wael-5sae6-kaddem-spring:1.0.0 || true'
+                                echo 'Création Image spring: '
+                                sh 'docker build -t cadevaccon/ezzine-wael-5sae6-kaddem-spring:1.0.0 .'
+                            }
+                        }
+                        stage('Run Unit Tests') {
+                            steps {
+                                echo 'Running Unit Tests: '
+                                sh 'mvn test -X'
                             }
                         }
 
 
-                                   stage('Publish Test Results') {
-                                                    steps {
-                                                        echo 'Publishing Test Results: '
-                                                        junit '**/target/surefire-reports/*.xml'
-                                                    }
-                                                }
+                       stage('Publish Test Results') {
+                                        steps {
+                                            echo 'Publishing Test Results: '
+                                            junit '**/target/surefire-reports/*.xml'
+                                        }
+                                    }
 
-                                                stage('JaCoCo Code Coverage') {
-                                                    steps {
-                                                        echo 'Generating JaCoCo Code Coverage Report: '
-                                                        sh 'mvn jacoco:report'
-                                                    }
-                                                }
+                                    stage('JaCoCo Code Coverage') {
+                                        steps {
+                                            echo 'Generating JaCoCo Code Coverage Report: '
+                                            sh 'mvn jacoco:report'
+                                        }
+                                    }
 
-                                                stage('Publish JaCoCo Report') {
-                                                    steps {
-                                                        jacoco execPattern: '**/target/jacoco.exec',
-                                                               classPattern: '**/target/classes',
-                                                               sourcePattern: '**/src/main/java',
-                                                               inclusionPattern: '**/*.class',
-                                                               exclusionPattern: '**/*Test*.class'
-                                                    }
-                                                }
-                    }
+                                    stage('Publish JaCoCo Report') {
+                                        steps {
+                                            jacoco execPattern: '**/target/jacoco.exec',
+                                                   classPattern: '**/target/classes',
+                                                   sourcePattern: '**/src/main/java',
+                                                   inclusionPattern: '**/*.class',
+                                                   exclusionPattern: '**/*Test*.class'
+                                        }
+                                    }
+                       }
+                          stage('Push to Dockerhub') {
+                                                   steps {
+                                                       script {
+                                                           withCredentials([usernamePassword(credentialsId: 'DockerCreds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                                                               sh 'echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin'
+                                                           }
+                                                           sh 'docker push cadevaccon/ezzine-wael-5sae6-kaddem-spring:1.0.0'
+                                                           sh 'docker logout'
+                                                       }
+                                                   }
+                                               }
+
                 }
 
                 stage('Agent 2') {
