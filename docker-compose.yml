@@ -1,0 +1,32 @@
+version: '1'
+services:
+  app-kaddem-backend:
+    depends_on:
+      - mysqldb
+    image: zouhourkharraf/KharrafZouhour-5SAE6-Groupe4-kaddem:1.0
+    restart: on-failure
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8083:8089"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysqldb:3306/kaddem_db
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: 0000
+    stdin_open: true
+    tty: true
+
+  mysqldb:
+    image: mysql:5.7
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: 0000
+      MYSQL_DATABASE: kaddem_db
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+volumes:
+  mysql-data:
