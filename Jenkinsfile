@@ -125,19 +125,20 @@ pipeline {
                                        exclusionPattern: '**/*Test*.class'
                             }
                         }
+                         stage('Push to Dockerhub') {
+                                                steps {
+                                                    script {
+                                                        withCredentials([usernamePassword(credentialsId: 'DockerCreds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                                                            sh 'echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin'
+                                                        }
+                                                        sh 'docker push cadevaccon/ezzine-wael-5sae6-kaddem-spring:1.0.0'
+                                                        sh 'docker logout'
+                                                    }
+                                                }
+                                            }
                     }
 
-                    stage('Push to Dockerhub') {
-                        steps {
-                            script {
-                                withCredentials([usernamePassword(credentialsId: 'DockerCreds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                                    sh 'echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin'
-                                }
-                                sh 'docker push cadevaccon/ezzine-wael-5sae6-kaddem-spring:1.0.0'
-                                sh 'docker logout'
-                            }
-                        }
-                    }
+
                 }
 
                 stage('Agent 2') {
