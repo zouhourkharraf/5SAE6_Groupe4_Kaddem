@@ -5,9 +5,9 @@ services:
     #image: jobjob1/kaddem:1.0.0
     image: cadevaccon/ezzine-wael-5sae6-kaddem-spring:1.0.0
     restart: on-failure
-    #build:
-    #  context: .
-    #  dockerfile: Dockerfile
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
       - "8100:8100"
     environment:
