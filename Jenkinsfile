@@ -55,12 +55,7 @@ pipeline {
                             }
                         }
 
-                        stage('Docker-Compose') {
-                            steps {
-                                sh 'pwd'
-                                sh 'docker compose up -d'
-                            }
-                        }
+
 
                         stage('SonarQube Analysis') {
                             steps {
