@@ -146,27 +146,24 @@ pipeline {
                         stage('Maven Clean') {
                             steps {
                                 echo 'Nettoyage du Projet : '
-                                dir('gestion-station-ski') {
                                     sh 'mvn clean'
-                                }
+
                             }
                         }
 
                         stage('Maven Compile') {
                             steps {
                                 echo 'Construction du Projet : '
-                                dir('gestion-station-ski') {
                                     sh 'mvn compile'
-                                }
+
                             }
                         }
 
                         stage('Run Unit Tests') {
                             steps {
                                 echo 'Running Unit Tests: '
-                                dir('gestion-station-ski') {
                                     sh 'mvn test -X'
-                                }
+
                             }
                         }
 
@@ -180,9 +177,8 @@ pipeline {
                         stage('JaCoCo Code Coverage') {
                             steps {
                                 echo 'Generating JaCoCo Code Coverage Report: '
-                                dir('gestion-station-ski') {
                                     sh 'mvn jacoco:report'
-                                }
+                                
                             }
                         }
 
