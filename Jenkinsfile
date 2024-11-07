@@ -164,9 +164,9 @@ pipeline {
                         stage('Run Unit Tests') {
                             steps {
                                 echo 'Running Unit Tests: '
-                                    //sh 'sudo docker compose up -d'
+                                    sh 'sudo docker compose up -d'
                                     sh 'mvn test -X'
-                                    //sh 'docker compose down'
+                                    sh 'sudo docker compose down'
 
                             }
                         }
