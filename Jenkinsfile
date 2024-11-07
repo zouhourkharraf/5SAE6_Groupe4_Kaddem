@@ -14,7 +14,7 @@ pipeline {
                 stage('Greeting from Agent 2') {
                     agent { label 'agent2' }
                     stages{
-                    stage {
+                    stage('Greet')   {
                                            steps {
                                                                    echo 'Greetings from Agent 2! Ready for action!'
                                                                }
@@ -27,8 +27,8 @@ pipeline {
                                                              credentialsId: 'github-creds'
                                                      }
                                                  }
-
-                    
+    }
+                    }
 
                 }
 
