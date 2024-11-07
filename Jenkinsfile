@@ -13,10 +13,25 @@ pipeline {
 
                 stage('Greeting from Agent 2') {
                     agent { label 'agent2' }
-                    steps {
-                        echo 'Greetings from Agent 2! Ready for action!'
+                    stages{
+                    stage {
+                                           steps {
+                                                                   echo 'Greetings from Agent 2! Ready for action!'
+                                                               }
+                                        }
+                         stage('Git Pull on Agent 2') {
+                                                     steps {
+                                                         echo 'Git Pulling........'
+                                                         git branch: 'EzzineWael_5SAE6_Groupe4',
+                                                             url: 'https://github.com/zouhourkharraf/5SAE6_Groupe4_Kaddem',
+                                                             credentialsId: 'github-creds'
+                                                     }
+                                                 }
+
                     }
+
                 }
+
             }
         }
         stage('build and run') {
@@ -132,6 +147,60 @@ pipeline {
                                 echo 'hello from 2'
                             }
                         }
+
+                                                stage('Maven Clean') {
+                                                    steps {
+                                                        echo 'Nettoyage du Projet : '
+                                                        dir('gestion-station-ski') {
+                                                            sh 'mvn clean'
+                                                        }
+                                                    }
+                                                }
+
+                                                stage('Maven Compile') {
+                                                    steps {
+                                                        echo 'Construction du Projet : '
+                                                        dir('gestion-station-ski') {
+                                                            sh 'mvn compile'
+                                                        }
+                                                    }
+                                                }
+
+                                                stage('Run Unit Tests') {
+                                                    steps {
+                                                        echo 'Running Unit Tests: '
+                                                        dir('gestion-station-ski') {
+                                                            sh 'mvn test -X'
+                                                        }
+                                                    }
+                                                }
+
+                                                stage('Publish Test Results') {
+                                                    steps {
+                                                        echo 'Publishing Test Results: '
+                                                        junit '**/target/surefire-reports/*.xml'
+                                                    }
+                                                }
+
+                                                stage('JaCoCo Code Coverage') {
+                                                    steps {
+                                                        echo 'Generating JaCoCo Code Coverage Report: '
+                                                        dir('gestion-station-ski') {
+                                                            sh 'mvn jacoco:report'
+                                                        }
+                                                    }
+                                                }
+
+                                                stage('Publish JaCoCo Report') {
+                                                    steps {
+                                                        jacoco execPattern: '**/target/jacoco.exec',
+                                                               classPattern: '**/target/classes',
+                                                               sourcePattern: '**/src/main/java',
+                                                               inclusionPattern: '**/*.class',
+                                                               exclusionPattern: '**/*Test*.class'
+                                                    }
+                                                }
+
                     }
                 }
             }
