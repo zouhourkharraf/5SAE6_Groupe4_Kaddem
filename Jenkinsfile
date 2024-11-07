@@ -6,7 +6,6 @@ pipeline {
         MAVEN_HOME = '/usr/share/maven'
         SONARQUBE_SERVER = 'SonarQube'
         SONAR_TOKEN = credentials('sonar-token')
-        DOCKERHUB_CREDENTIALS = credentials('dockerhub-credentials')
     }
 
     stages {
@@ -54,14 +53,18 @@ pipeline {
                  }
 
          stage('Push Docker Image to DockerHub') {
-                              steps {
-                                  script {
-                                      docker.withRegistry('https://index.docker.io/v1/', DOCKERHUB_CREDENTIALS) {
-                                          docker.image("zouhourkharraf/kharrafzouhour-5sae6-groupe4-kaddem:1.0").push()
-                                      }
-                                  }
-                              }
-                          }
+             steps {
+                 script {
+                     // Utilisation des credentials Docker Hub pour s'authentifier
+                     withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                         docker.withRegistry('https://index.docker.io/v1/', '') {
+                             docker.image("zouhourkharraf/kharrafzouhour-5sae6-groupe4-kaddem:1.0")
+                                  .push()
+                         }
+                     }
+                 }
+             }
+         }
 
          stage('Deploy with Docker Compose') {
                               steps {
