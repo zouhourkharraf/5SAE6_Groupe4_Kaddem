@@ -50,9 +50,7 @@ pipeline {
                         stage('Run Unit Tests') {
                             steps {
                                 echo 'Running Unit Tests: '
-                                dir('gestion-station-ski') {
-                                    sh 'mvn test -X'
-                                }
+                                sh 'mvn test -X'
                             }
                         }
 
@@ -88,9 +86,7 @@ pipeline {
 
                         stage('nexus') {
                             steps {
-                                dir('gestion-station-ski') {
-                                     sh 'mvn deploy -Dmaven.test.skip=true'
-                                }
+                                sh 'mvn deploy -Dmaven.test.skip=true'
                             }
                         }
 
