@@ -178,7 +178,7 @@ pipeline {
                             steps {
                                 echo 'Generating JaCoCo Code Coverage Report: '
                                     sh 'mvn jacoco:report'
-                                
+
                             }
                         }
 
