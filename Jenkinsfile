@@ -63,9 +63,9 @@ pipeline {
                         stage('Run Unit Tests') {
                             steps {
                                 echo 'Running Unit Tests: '
-                                sh 'docker compose up -d'
+                                //sh 'docker compose up -d'
                                 sh 'mvn test -X'
-                                sh 'docker compose down'
+                                //sh 'docker compose down'
                             }
                         }
 
@@ -164,9 +164,9 @@ pipeline {
                         stage('Run Unit Tests') {
                             steps {
                                 echo 'Running Unit Tests: '
-                                    sh 'docker compose up -d'
+                                    //sh 'docker compose up -d'
                                     sh 'mvn test -X'
-                                    sh 'docker compose down'
+                                    //sh 'docker compose down'
 
                             }
                         }
