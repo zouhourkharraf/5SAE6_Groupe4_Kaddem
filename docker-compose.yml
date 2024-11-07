@@ -3,7 +3,7 @@ services:
   app-kaddem-backend:
     depends_on:
       - mysqldb
-    image: zouhourkharraf/KharrafZouhour-5SAE6-Groupe4-kaddem:1.0
+    image: zouhourkharraf/kharrafzouhour-5sae6-groupe4-kaddem:1.0
     restart: on-failure
     build:
       context: .

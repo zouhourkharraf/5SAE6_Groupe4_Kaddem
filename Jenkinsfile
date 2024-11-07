@@ -48,7 +48,7 @@ pipeline {
          stage('Build Docker Image') {
                      steps {
                          script {
-                             docker.build("zouhourkharraf/KharrafZouhour-5SAE6-Groupe4-kaddem:1.0")
+                             docker.build("zouhourkharraf/kharrafzouhour-5sae6-groupe4-kaddem:1.0")
                          }
                      }
                  }
