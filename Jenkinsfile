@@ -182,7 +182,7 @@ pipeline {
                 """
         }
         failure {
-            echo 'Build failed!'
+            echo 'Build faileddd!'
             mail to: 'ezine.wael@gmail.com',
                 subject: "❌ Échec du Build: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                 body: """
