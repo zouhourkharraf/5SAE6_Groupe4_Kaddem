@@ -64,7 +64,7 @@ pipeline {
 
                         stage('SonarQube Analysis') {
                             steps {
-                                sh 'mvn clean install -U'
+                                //sh 'mvn clean install -U'
                                 withSonarQubeEnv('SonarQube servers') {
                                     sh 'mvn sonar:sonar -Dmaven.test.skip=true'
                                 }
