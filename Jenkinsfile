@@ -143,10 +143,10 @@ pipeline {
         }
         success {
             echo 'Build completed successfully!'
-            mail to: 'houssem-eddin.jallouli@esprit.tn',
+            mail to: 'ezine.wael@gmail.com',
                 subject: "🎉 Build Successful: ${env.JOB_NAME} #${env.BUILD_NUMBER} 🎉",
                 body: """
-                Hello Houssem-Eddin! 👋
+                Hello Ezine Wael ! 👋
 
                 🎊 Congratulations! The build for the project **'${env.JOB_NAME}'** has completed successfully! 🎊
 
@@ -163,10 +163,10 @@ pipeline {
             }
         failure {
             echo 'Build failed!'
-            mail to: 'houssem-eddin.jallouli@esprit.tn',
+            mail to: 'ezine.wael@gmail.com',
                 subject: "❌ Échec du Build: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                 body: """
-                salut houssem-eddin,
+                salut Ezzine Wael,
 
                 Le build du projet **'${env.JOB_NAME}'** s'est terminé avec le statut : FAILURE. ❌
 
