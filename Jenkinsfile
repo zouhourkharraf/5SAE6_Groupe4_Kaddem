@@ -99,7 +99,7 @@ pipeline {
                                 sh 'docker compose down'
                                 sh 'docker image rm cadevaccon/ezzine-wael-5sae6-kaddem-spring:1.0.0 || true'
                                 echo 'Création Image spring: '
-                                sh 'docker build -t cadevaccon/ezzine-wael-5sae6-kaddem-spring:1.0.0 .
+                                sh 'docker build -t cadevaccon/ezzine-wael-5sae6-kaddem-spring:1.0.0 . '
                             }
                         }
 
