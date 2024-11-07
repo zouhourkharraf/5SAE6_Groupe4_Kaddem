@@ -85,15 +85,7 @@ pipeline {
                             }
                         }
 
-                        stage('Build Spring Image') {
-                            steps {
-                                echo 'Stopping existing containers and removing old images...'
-                                sh 'docker compose down'
-                                sh 'docker image rm cadevaccon/ezzine-wael-5sae6-kaddem-spring:1.0.0 || true'
-                                echo 'Creating new Docker image...'
-                                sh 'docker build -t cadevaccon/ezzine-wael-5sae6-kaddem-spring:1.0.0 .'
-                            }
-                        }
+
 
                         stage('Run Unit Tests') {
                             steps {
@@ -125,6 +117,16 @@ pipeline {
                                        exclusionPattern: '**/*Test*.class'
                             }
                         }
+                          stage('Build Spring Image') {
+                                                    steps {
+                                                        echo 'Stopping existing containers and removing old images...'
+                                                        sh 'docker compose down'
+                                                        sh 'docker image rm cadevaccon/ezzine-wael-5sae6-kaddem-spring:1.0.0 || true'
+                                                        echo 'Creating new Docker image...'
+                                                        sh 'docker build -t cadevaccon/ezzine-wael-5sae6-kaddem-spring:1.0.0 .'
+                                                        sh 'docker compose up -d'
+                                                    }
+                                                }
                          stage('Push to Dockerhub') {
                                                 steps {
                                                     script {
