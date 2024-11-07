@@ -68,12 +68,12 @@ pipeline {
                         }
 
                         stage('SonarQube Analysis') {
-                            steps {
-                                echo 'Analyse de la Qualité du Code : '
-                                withSonarQubeEnv('SonarQube servers') {
-                                    sh 'mvn sonar:sonar -Dmaven.test.skip=true'
-                                }
-                            }
+            steps {
+               sh  'mvn clean install -U'
+                withSonarQubeEnv('SonarQube servers') {
+                    sh 'mvn sonar:sonar -Dmaven.test.skip=true'
+                }
+            }
                         }
 
                         stage("Quality Gate") {
