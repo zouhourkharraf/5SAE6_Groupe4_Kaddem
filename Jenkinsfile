@@ -137,7 +137,7 @@ pipeline {
                         }
 
 
-                        stage('Git Pull on Agent 1') {
+                        stage('Git Pull on Agent 2') {
                             steps {
                                 echo 'Git Pulling........'
                                 git branch: 'EzzineWael_5SAE6_Groupe4',
@@ -164,7 +164,7 @@ pipeline {
                         stage('Run Unit Tests') {
                             steps {
                                 echo 'Running Unit Tests: '
-                                    sh 'mvn test -X'
+                                    sh 'mvn test '
 
                             }
                         }
