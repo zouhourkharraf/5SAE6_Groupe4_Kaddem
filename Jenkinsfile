@@ -63,7 +63,7 @@ pipeline {
                         stage('Run Unit Tests') {
                             steps {
                                 echo 'Running Unit Tests: '
-                                //sh 'mvn test -X'
+                                sh 'mvn test -X'
                             }
                         }
 
@@ -162,7 +162,7 @@ pipeline {
                         stage('Run Unit Tests') {
                             steps {
                                 echo 'Running Unit Tests: '
-                                    //sh 'mvn test -X'
+                                    sh 'mvn test -X'
 
                             }
                         }
