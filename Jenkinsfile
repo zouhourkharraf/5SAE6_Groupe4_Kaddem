@@ -1,99 +1,185 @@
 pipeline {
-    agent any
+    agent none
+
     stages {
-        stage('Hello Master') {
-            steps {
-                echo 'Hello Master........'
-                sh 'mvn --version'
-                sh 'java -version'
-            }
-        }
+        stage('Greeting') {
+            parallel {
+                stage('Greeting from Agent 1') {
+                    agent { label 'agent1 ' }
+                    steps {
+                        echo 'Hello from Agent 1! Ready to go!'
+                    }
+                }
 
-        stage('Git Pull') {
-            steps {
-                echo 'Git Pulling........'
-                git branch: 'EzzineWael_5SAE6_Groupe4',
-                    url: 'https://github.com/zouhourkharraf/5SAE6_Groupe4_Kaddem',
-                    credentialsId: 'github-creds' // Uncomment if you need credentials
-            }
-        }
-
-        
-        stage('MAVEN CLEAN') {
-            steps {
-                sh 'mvn clean'
-            }
-        }
-
-        stage('MAVEN Compile') {
-            steps {
-                sh 'mvn compile'
-            }
-        }
-
-        stage('SONA things') {
-            steps {
-               sh  'mvn clean install -U'
-                withSonarQubeEnv('SonarQube servers') {
-                    sh 'mvn sonar:sonar -Dmaven.test.skip=true'
+                stage('Greeting from Agent 2') {
+                    agent { label 'agent2' }
+                    steps {
+                        echo 'Greetings from Agent 2! Ready for action!'
+                    }
                 }
             }
         }
+        stage('build and run') {
+            parallel {
+                stage('Agent 1') {
+                    agent { label 'agent1' }
+                    stages {
+                        stage('Git Pull on Agent 1') {
+                            steps {
+                                echo 'Git Pulling........'
+                                git branch: 'EzzineWael_5SAE6_Groupe4',
+                                    url: 'https://github.com/zouhourkharraf/5SAE6_Groupe4_Kaddem',
+                                    credentialsId: 'github-creds'
+                            }
+                        }
 
+                        stage('Maven Clean') {
+                            steps {
+                                echo 'Nettoyage du Projet : '
+                                sh 'mvn clean'
+                            }
+                        }
 
+                        stage('Maven Compile') {
+                            steps {
+                                echo 'Construction du Projet : '
+                                sh 'mvn compile'
+                            }
+                        }
 
-        stage('MAVEN Install') {
-            steps {
-                sh 'mvn install'
-            }
-        }
+                        stage('Run Unit Tests') {
+                            steps {
+                                echo 'Running Unit Tests: '
+                                dir('gestion-station-ski') {
+                                    sh 'mvn test -X'
+                                }
+                            }
+                        }
 
-        stage('Run Tests') {
-            steps {
-                sh 'mvn test'
-            }
-        }
+                        stage('Maven Package') {
+                            steps {
+                                echo 'Création du livrable : '
+                                    sh 'mvn package -DskipTests'
+                            }
+                        }
 
-        stage('Deploy') {
-            steps {
-                sh 'mvn deploy'
-            }
-        }
+                        stage('MAVEN Install') {
+                            steps {
+                                sh 'mvn install'
+                            }
+                        }
 
-        stage('DOCKER StartUP') {
-            steps {
-                sh 'docker compose down'
-                sh 'docker compose up -d'
-            }
-        }
-        stage('Docker Build & Push') {
-            steps {
-                script {
-                    dockerImage = 'your-image-name' // Set your Docker image name here
-                    dockerTag = "latest" // Use "latest" or any other specific tag you prefer
+                        stage('SonarQube Analysis') {
+                            steps {
+                                echo 'Analyse de la Qualité du Code : '
+                                withSonarQubeEnv('SonarQube servers') {
+                                    sh 'mvn sonar:sonar -Dmaven.test.skip=true'
+                            }
+                            }
+                        }
+                        stage("Quality Gate") {
+                            steps {
+                                timeout(time: 2, unit: 'MINUTES') {
+                                    waitForQualityGate abortPipeline: true
+                                }
+                            }
+                        }
 
-                    withCredentials([usernamePassword(credentialsId: 'DockerCreds',
-                                                      usernameVariable: 'DOCKER_USER',
-                                                      passwordVariable: 'DOCKER_PASS')]) {
-                        sh 'echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin'
+                        stage('nexus') {
+                            steps {
+                                dir('gestion-station-ski') {
+                                     sh 'mvn deploy -Dmaven.test.skip=true'
+                                }
+                            }
+                        }
+
+                        stage('Image Spring') {
+                            steps {
+                                echo 'compose down so we can delete the old images'
+                                sh 'docker compose down'
+                                sh 'docker image rm cadevaccon/ezzine-wael-5sae6-kaddem-spring:1.0.0 || true'
+                                echo 'Création Image spring: '
+                                sh 'docker build -t cadevaccon/ezzine-wael-5sae6-kaddem-spring:1.0.0 .
+                            }
+                        }
+
+                        stage('Push in Dockerhub') {
+                            steps {
+                                script {
+                                    withCredentials([usernamePassword(credentialsId: 'DockerCreds',
+                                                                      usernameVariable: 'DOCKER_USER',
+                                                                      passwordVariable: 'DOCKER_PASS')]) {
+                                        sh 'echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin'
+                                    }
+                                    sh 'docker push cadevaccon/ezzine-wael-5sae6-kaddem-spring:1.0.0'
+                                    sh 'docker logout'
+                                }
+                            }
+                        }
+
+                        stage('Docker-Compose') {
+                            steps {
+                                sh 'pwd'
+                                //sh 'docker compose down'
+                                sh 'docker compose up -d'
+                            }
+                        }
                     }
+                }
 
-                    sh "docker build -t ${dockerImage}:${dockerTag} ."
-                    sh "docker tag ${dockerImage}:${dockerTag} ${dockerRegistry}/${dockerImage}:${dockerTag}"
-                    sh "docker push ${dockerImage}:${dockerTag}"
+                stage('Agent 2') {
+                    agent { label 'agent2' }
+                    stages {
 
-                    sh 'docker logout'
+                    }
                 }
             }
         }
     }
+
     post {
+        always {
+            echo 'Pipeline execution completed!'
+        }
         success {
             echo 'Build completed successfully!'
-        }
+            mail to: 'houssem-eddin.jallouli@esprit.tn',
+                subject: "🎉 Build Successful: ${env.JOB_NAME} #${env.BUILD_NUMBER} 🎉",
+                body: """
+                Hello Houssem-Eddin! 👋
+
+                🎊 Congratulations! The build for the project **'${env.JOB_NAME}'** has completed successfully! 🎊
+
+                **Details:**
+                - **Build Number:** ${env.BUILD_NUMBER}
+                - **Build Status:** ✅ SUCCESS
+                - **Build Duration:** ${currentBuild.durationString}
+
+                You can view the full console output here: [Console Output](${env.BUILD_URL}console)
+
+                Best regards,
+                Jenkins CI/CD 🤖
+                """
+            }
         failure {
-            sh 'docker compose down'
             echo 'Build failed!'
+            mail to: 'houssem-eddin.jallouli@esprit.tn',
+                subject: "❌ Échec du Build: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                body: """
+                salut houssem-eddin,
+
+                Le build du projet **'${env.JOB_NAME}'** s'est terminé avec le statut : FAILURE. ❌
+
+                **Détails :**
+                - **Numéro du Build :** ${env.BUILD_NUMBER}
+                - **Statut du Build :** ❌ FAILURE
+                - **Durée du Build :** ${currentBuild.durationString}
+
+                Vous pouvez consulter la sortie complète de la console ici : [Sortie de la console](${env.BUILD_URL}console)
+
+                Cordialement,
+                Jenkins CI/CD
+                """
         }
     }
 }
