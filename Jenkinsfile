@@ -113,6 +113,29 @@ pipeline {
                                 sh 'docker compose up -d'
                             }
                         }
+                                   stage('Publish Test Results') {
+                                                    steps {
+                                                        echo 'Publishing Test Results: '
+                                                        junit '**/target/surefire-reports/*.xml'
+                                                    }
+                                                }
+
+                                                stage('JaCoCo Code Coverage') {
+                                                    steps {
+                                                        echo 'Generating JaCoCo Code Coverage Report: '
+                                                        sh 'mvn jacoco:report'
+                                                    }
+                                                }
+
+                                                stage('Publish JaCoCo Report') {
+                                                    steps {
+                                                        jacoco execPattern: '**/target/jacoco.exec',
+                                                               classPattern: '**/target/classes',
+                                                               sourcePattern: '**/src/main/java',
+                                                               inclusionPattern: '**/*.class',
+                                                               exclusionPattern: '**/*Test*.class'
+                                                    }
+                                                }
                     }
                 }
 
@@ -128,52 +151,13 @@ pipeline {
                             }
                         }
 
-                        stage('Maven Clean') {
-                            steps {
-                                echo 'Nettoyage du Projet : '
-                                sh 'mvn clean'
-                            }
-                        }
 
-                        stage('Maven Compile') {
-                            steps {
-                                echo 'Construction du Projet : '
-                                sh 'mvn compile'
-                            }
-                        }
 
-                        stage('Run Unit Tests') {
-                            steps {
-                                echo 'Running Unit Tests: '
-                                sh 'docker compose up -d'
-                                sh 'mvn test -X'
-                                sh 'docker compose down'
-                            }
-                        }
 
-                        stage('Publish Test Results') {
-                            steps {
-                                echo 'Publishing Test Results: '
-                                junit '**/target/surefire-reports/*.xml'
-                            }
-                        }
 
-                        stage('JaCoCo Code Coverage') {
-                            steps {
-                                echo 'Generating JaCoCo Code Coverage Report: '
-                                sh 'mvn jacoco:report'
-                            }
-                        }
 
-                        stage('Publish JaCoCo Report') {
-                            steps {
-                                jacoco execPattern: '**/target/jacoco.exec',
-                                       classPattern: '**/target/classes',
-                                       sourcePattern: '**/src/main/java',
-                                       inclusionPattern: '**/*.class',
-                                       exclusionPattern: '**/*Test*.class'
-                            }
-                        }
+
+
                     }
                 }
             }
