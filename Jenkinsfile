@@ -53,18 +53,20 @@ pipeline {
                  }
 
          stage('Push Docker Image to DockerHub') {
-             steps {
-                 script {
-                     // Utilisation des credentials Docker Hub pour s'authentifier
-                     withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-                         docker.withRegistry('https://index.docker.io/v1/', '') {
-                             docker.image("zouhourkharraf/kharrafzouhour-5sae6-groupe4-kaddem:1.0")
-                                  .push()
-                         }
-                     }
-                 }
-             }
-         }
+            steps {
+                script {
+                    // Utilisation des credentials Docker Hub pour s'authentifier
+                    withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                        // Se connecter à Docker Hub
+                        sh "echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USERNAME} --password-stdin"
+
+                        // Pousser l'image
+                        sh 'docker push zouhourkharraf/kharrafzouhour-5sae6-groupe4-kaddem:1.0'
+                    }
+                }
+            }
+        }
+
 
          stage('Deploy with Docker Compose') {
                               steps {
