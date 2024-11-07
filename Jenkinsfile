@@ -19,7 +19,14 @@ pipeline {
                                 echo 'Greetings from Agent 2! Ready for action!'
                             }
                         }
-
+                        stage('Git Pull on Agent 2') {
+                            steps {
+                                echo 'Git Pulling........'
+                                git branch: 'EzzineWael_5SAE6_Groupe4',
+                                    url: 'https://github.com/zouhourkharraf/5SAE6_Groupe4_Kaddem',
+                                    credentialsId: 'github-creds'
+                            }
+                        }
                     }
                 }
             }
@@ -56,7 +63,9 @@ pipeline {
                         stage('Run Unit Tests') {
                             steps {
                                 echo 'Running Unit Tests: '
+                                sh 'docker compose up -d'
                                 sh 'mvn test -X'
+                                sh 'docker compose down'
                             }
                         }
 
@@ -136,15 +145,6 @@ pipeline {
                             }
                         }
 
-
-                        stage('Git Pull on Agent 2') {
-                            steps {
-                                echo 'Git Pulling........'
-                                git branch: 'EzzineWael_5SAE6_Groupe4',
-                                    url: 'https://github.com/zouhourkharraf/5SAE6_Groupe4_Kaddem',
-                                    credentialsId: 'github-creds'
-                            }
-                        }
                         stage('Maven Clean') {
                             steps {
                                 echo 'Nettoyage du Projet : '
@@ -164,7 +164,9 @@ pipeline {
                         stage('Run Unit Tests') {
                             steps {
                                 echo 'Running Unit Tests: '
-                                    sh 'mvn test '
+                                    sh 'docker compose up -d'
+                                    sh 'mvn test -X'
+                                    sh 'docker compose down'
 
                             }
                         }
