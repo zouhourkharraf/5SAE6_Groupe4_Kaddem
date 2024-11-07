@@ -13,28 +13,26 @@ pipeline {
 
                 stage('Greeting from Agent 2') {
                     agent { label 'agent2' }
-                    stages{
-                    stage('Greet')   {
-                                           steps {
-                                                                   echo 'Greetings from Agent 2! Ready for action!'
-                                                               }
-                                        }
-                         stage('Git Pull on Agent 2') {
-                                                     steps {
-                                                         echo 'Git Pulling........'
-                                                         git branch: 'EzzineWael_5SAE6_Groupe4',
-                                                             url: 'https://github.com/zouhourkharraf/5SAE6_Groupe4_Kaddem',
-                                                             credentialsId: 'github-creds'
-                                                     }
-                                                 }
-    }
+                    stages {
+                        stage('Greeting') {
+                            steps {
+                                echo 'Greetings from Agent 2! Ready for action!'
+                            }
+                        }
+                        stage('Git Pull on Agent 2') {
+                            steps {
+                                echo 'Git Pulling........'
+                                git branch: 'EzzineWael_5SAE6_Groupe4',
+                                    url: 'https://github.com/zouhourkharraf/5SAE6_Groupe4_Kaddem',
+                                    credentialsId: 'github-creds'
+                            }
+                        }
                     }
-
                 }
-
             }
         }
-        stage('build and run') {
+
+        stage('Build and Run') {
             parallel {
                 stage('Agent 1') {
                     agent { label 'agent1' }
@@ -76,19 +74,19 @@ pipeline {
                             }
                         }
 
-                        stage('MAVEN Install') {
+                        stage('Maven Install') {
                             steps {
                                 sh 'mvn install'
                             }
                         }
 
                         stage('SonarQube Analysis') {
-            steps {
-               sh  'mvn clean install -U'
-                withSonarQubeEnv('SonarQube servers') {
-                    sh 'mvn sonar:sonar -Dmaven.test.skip=true'
-                }
-            }
+                            steps {
+                                sh 'mvn clean install -U'
+                                withSonarQubeEnv('SonarQube servers') {
+                                    sh 'mvn sonar:sonar -Dmaven.test.skip=true'
+                                }
+                            }
                         }
 
                         stage("Quality Gate") {
@@ -99,7 +97,7 @@ pipeline {
                             }
                         }
 
-                        stage('nexus') {
+                        stage('Nexus') {
                             steps {
                                 sh 'mvn deploy -Dmaven.test.skip=true'
                             }
@@ -111,16 +109,14 @@ pipeline {
                                 sh 'docker compose down'
                                 sh 'docker image rm cadevaccon/ezzine-wael-5sae6-kaddem-spring:1.0.0 || true'
                                 echo 'Création Image spring: '
-                                sh 'docker build -t cadevaccon/ezzine-wael-5sae6-kaddem-spring:1.0.0 . '
+                                sh 'docker build -t cadevaccon/ezzine-wael-5sae6-kaddem-spring:1.0.0 .'
                             }
                         }
 
-                        stage('Push in Dockerhub') {
+                        stage('Push to Dockerhub') {
                             steps {
                                 script {
-                                    withCredentials([usernamePassword(credentialsId: 'DockerCreds',
-                                                                      usernameVariable: 'DOCKER_USER',
-                                                                      passwordVariable: 'DOCKER_PASS')]) {
+                                    withCredentials([usernamePassword(credentialsId: 'DockerCreds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                                         sh 'echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin'
                                     }
                                     sh 'docker push cadevaccon/ezzine-wael-5sae6-kaddem-spring:1.0.0'
@@ -132,7 +128,6 @@ pipeline {
                         stage('Docker-Compose') {
                             steps {
                                 sh 'pwd'
-                                //sh 'docker compose down'
                                 sh 'docker compose up -d'
                             }
                         }
@@ -144,63 +139,62 @@ pipeline {
                     stages {
                         stage('Agent 2 Greeting') {
                             steps {
-                                echo 'hello from 2'
+                                echo 'Hello from Agent 2'
                             }
                         }
 
-                                                stage('Maven Clean') {
-                                                    steps {
-                                                        echo 'Nettoyage du Projet : '
-                                                        dir('gestion-station-ski') {
-                                                            sh 'mvn clean'
-                                                        }
-                                                    }
-                                                }
+                        stage('Maven Clean') {
+                            steps {
+                                echo 'Nettoyage du Projet : '
+                                dir('gestion-station-ski') {
+                                    sh 'mvn clean'
+                                }
+                            }
+                        }
 
-                                                stage('Maven Compile') {
-                                                    steps {
-                                                        echo 'Construction du Projet : '
-                                                        dir('gestion-station-ski') {
-                                                            sh 'mvn compile'
-                                                        }
-                                                    }
-                                                }
+                        stage('Maven Compile') {
+                            steps {
+                                echo 'Construction du Projet : '
+                                dir('gestion-station-ski') {
+                                    sh 'mvn compile'
+                                }
+                            }
+                        }
 
-                                                stage('Run Unit Tests') {
-                                                    steps {
-                                                        echo 'Running Unit Tests: '
-                                                        dir('gestion-station-ski') {
-                                                            sh 'mvn test -X'
-                                                        }
-                                                    }
-                                                }
+                        stage('Run Unit Tests') {
+                            steps {
+                                echo 'Running Unit Tests: '
+                                dir('gestion-station-ski') {
+                                    sh 'mvn test -X'
+                                }
+                            }
+                        }
 
-                                                stage('Publish Test Results') {
-                                                    steps {
-                                                        echo 'Publishing Test Results: '
-                                                        junit '**/target/surefire-reports/*.xml'
-                                                    }
-                                                }
+                        stage('Publish Test Results') {
+                            steps {
+                                echo 'Publishing Test Results: '
+                                junit '**/target/surefire-reports/*.xml'
+                            }
+                        }
 
-                                                stage('JaCoCo Code Coverage') {
-                                                    steps {
-                                                        echo 'Generating JaCoCo Code Coverage Report: '
-                                                        dir('gestion-station-ski') {
-                                                            sh 'mvn jacoco:report'
-                                                        }
-                                                    }
-                                                }
+                        stage('JaCoCo Code Coverage') {
+                            steps {
+                                echo 'Generating JaCoCo Code Coverage Report: '
+                                dir('gestion-station-ski') {
+                                    sh 'mvn jacoco:report'
+                                }
+                            }
+                        }
 
-                                                stage('Publish JaCoCo Report') {
-                                                    steps {
-                                                        jacoco execPattern: '**/target/jacoco.exec',
-                                                               classPattern: '**/target/classes',
-                                                               sourcePattern: '**/src/main/java',
-                                                               inclusionPattern: '**/*.class',
-                                                               exclusionPattern: '**/*Test*.class'
-                                                    }
-                                                }
-
+                        stage('Publish JaCoCo Report') {
+                            steps {
+                                jacoco execPattern: '**/target/jacoco.exec',
+                                       classPattern: '**/target/classes',
+                                       sourcePattern: '**/src/main/java',
+                                       inclusionPattern: '**/*.class',
+                                       exclusionPattern: '**/*Test*.class'
+                            }
+                        }
                     }
                 }
             }
@@ -216,7 +210,7 @@ pipeline {
             mail to: 'ezine.wael@gmail.com',
                 subject: "🎉 Build Successful: ${env.JOB_NAME} #${env.BUILD_NUMBER} 🎉",
                 body: """
-                Hello Ezine Wael ! 👋
+                Hello Ezine Wael! 👋
 
                 🎊 Congratulations! The build for the project **'${env.JOB_NAME}'** has completed successfully! 🎊
 
@@ -230,13 +224,13 @@ pipeline {
                 Best regards,
                 Jenkins CI/CD 🤖
                 """
-            }
+        }
         failure {
             echo 'Build failed!'
             mail to: 'ezine.wael@gmail.com',
                 subject: "❌ Échec du Build: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                 body: """
-                salut Ezzine Wael,
+                Salut Ezzine Wael,
 
                 Le build du projet **'${env.JOB_NAME}'** s'est terminé avec le statut : FAILURE. ❌
 
