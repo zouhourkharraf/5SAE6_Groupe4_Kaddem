@@ -33,7 +33,17 @@ pipeline {
                                     credentialsId: 'github-creds'
                             }
                         }
+                        stage('Image Spring') {
+                            steps {
+                                echo 'compose down so we can delete the old images'
+                                sh 'docker compose down'
+                                sh 'docker image rm cadevaccon/ezzine-wael-5sae6-kaddem-spring:1.0.0 || true'
+                                echo 'Création Image spring: '
+                                sh 'docker build -t cadevaccon/ezzine-wael-5sae6-kaddem-spring:1.0.0 .'
+                                 sh 'docker compose up -d'
 
+                            }
+                        }
                         stage('Maven Clean') {
                             steps {
                                 echo 'Nettoyage du Projet : '
@@ -85,15 +95,7 @@ pipeline {
                             }
                         }
 
-                        stage('Image Spring') {
-                            steps {
-                                echo 'compose down so we can delete the old images'
-                                sh 'docker compose down'
-                                sh 'docker image rm cadevaccon/ezzine-wael-5sae6-kaddem-spring:1.0.0 || true'
-                                echo 'Création Image spring: '
-                                sh 'docker build -t cadevaccon/ezzine-wael-5sae6-kaddem-spring:1.0.0 .'
-                            }
-                        }
+
 
                         stage('Push to Dockerhub') {
                             steps {
@@ -107,12 +109,7 @@ pipeline {
                             }
                         }
 
-                        stage('Docker-Compose') {
-                            steps {
-                                sh 'pwd'
-                                sh 'docker compose up -d'
-                            }
-                        }
+
                                    stage('Publish Test Results') {
                                                     steps {
                                                         echo 'Publishing Test Results: '
