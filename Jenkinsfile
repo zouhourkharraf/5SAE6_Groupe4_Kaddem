@@ -57,7 +57,7 @@ pipeline {
                               steps {
                                   script {
                                       docker.withRegistry('https://index.docker.io/v1/', DOCKERHUB_CREDENTIALS) {
-                                          docker.image("zouhourkharraf/KharrafZouhour-5SAE6-Groupe4-kaddem:1.0").push()
+                                          docker.image("zouhourkharraf/kharrafzouhour-5sae6-groupe4-kaddem:1.0").push()
                                       }
                                   }
                               }
