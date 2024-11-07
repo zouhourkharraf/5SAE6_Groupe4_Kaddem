@@ -1,24 +1,33 @@
-
+ 
 services:
 
+  mysqldb:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: houssemino
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql  # Persist data in a Docker volume
+
   kaddemNewv0.1:
-    #image: jobjob1/kaddem:1.0.0
     image: cadevaccon/ezzine-wael-5sae6-kaddem-spring:1.0.0
     restart: on-failure
-    build:
-      context: .
-      dockerfile: Dockerfile
     ports:
       - "8100:8100"
     environment:
       SPRING_APPLICATION_JSON: '{
-        "spring.datasource.url"  : "jdbc:mysql://localhost:3306/kaddem?createDatabaseIfNotExist=true",
+        "spring.datasource.url" : "jdbc:mysql://mysqldb:3306/houssemino?createDatabaseIfNotExist=true",
         "spring.datasource.username" : "root",
         "spring.datasource.password" : "root",
         "spring.jpa.hibernate.ddl-auto" : "update"
       }'
+    depends_on:
+      - mysqldb
     stdin_open: true
     tty: true
-volumes:
-  db:
 
+volumes:
+  db_data:

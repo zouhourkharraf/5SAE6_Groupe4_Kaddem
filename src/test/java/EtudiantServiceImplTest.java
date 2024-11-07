@@ -8,11 +8,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.testcontainers.containers.MySQLContainer;
 import tn.esprit.spring.kaddem.entities.Contrat;
 import tn.esprit.spring.kaddem.entities.Departement;
 import tn.esprit.spring.kaddem.entities.Equipe;
@@ -24,6 +26,11 @@ import tn.esprit.spring.kaddem.repositories.EtudiantRepository;
 import tn.esprit.spring.kaddem.services.EtudiantServiceImpl;
 
 class EtudiantServiceImplTest {
+
+    static MySQLContainer<?> mysqlContainer = new MySQLContainer<>("mysql:8.0")
+            .withDatabaseName("test")
+            .withUsername("root")
+            .withPassword("root");
 
     @InjectMocks
     private EtudiantServiceImpl etudiantService;
@@ -40,8 +47,16 @@ class EtudiantServiceImplTest {
     @Mock
     private DepartementRepository departementRepository;
 
+    @BeforeAll
+    public static void setUp() {
+        mysqlContainer.start();
+        System.setProperty("spring.datasource.url", mysqlContainer.getJdbcUrl());
+        System.setProperty("spring.datasource.username", mysqlContainer.getUsername());
+        System.setProperty("spring.datasource.password", mysqlContainer.getPassword());
+    }
+
     @BeforeEach
-    void setUp() {
+    void setUpService() {
         MockitoAnnotations.openMocks(this);
     }
 
