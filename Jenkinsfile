@@ -47,7 +47,35 @@ pipeline {
                                 sh 'mvn compile'
                             }
                         }
+                        stage('Run Unit Tests') {
+                            steps {
+                                echo 'Running unit tests...'
+                                sh 'mvn test -X'
+                            }
+                        }
+                        stage('Publish Test Results') {
+                            steps {
+                                echo 'Publishing test results...'
+                                junit '**/target/surefire-reports/*.xml'
+                            }
+                        }
 
+                        stage('JaCoCo Code Coverage') {
+                            steps {
+                                echo 'Generating JaCoCo code coverage report...'
+                                sh 'mvn jacoco:report'
+                            }
+                        }
+
+                        stage('Publish JaCoCo Report') {
+                            steps {
+                                jacoco execPattern: '**/target/jacoco.exec',
+                                       classPattern: '**/target/classes',
+                                       sourcePattern: '**/src/main/java',
+                                       inclusionPattern: '**/*.class',
+                                       exclusionPattern: '**/*Test*.class'
+                            }
+                        }
                         stage('Maven Package') {
                             steps {
                                 echo 'Creating package...'
@@ -75,36 +103,8 @@ pipeline {
 
 
 
-                        stage('Run Unit Tests') {
-                            steps {
-                                echo 'Running unit tests...'
-                                sh 'mvn test -X'
-                            }
-                        }
 
-                        stage('Publish Test Results') {
-                            steps {
-                                echo 'Publishing test results...'
-                                junit '**/target/surefire-reports/*.xml'
-                            }
-                        }
 
-                        stage('JaCoCo Code Coverage') {
-                            steps {
-                                echo 'Generating JaCoCo code coverage report...'
-                                sh 'mvn jacoco:report'
-                            }
-                        }
-
-                        stage('Publish JaCoCo Report') {
-                            steps {
-                                jacoco execPattern: '**/target/jacoco.exec',
-                                       classPattern: '**/target/classes',
-                                       sourcePattern: '**/src/main/java',
-                                       inclusionPattern: '**/*.class',
-                                       exclusionPattern: '**/*Test*.class'
-                            }
-                        }
                           stage('Build Spring Image') {
                                                     steps {
                                                         echo 'Stopping existing containers and removing old images...'
