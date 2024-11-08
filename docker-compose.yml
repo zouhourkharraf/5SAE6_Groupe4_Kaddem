@@ -23,9 +23,14 @@ services:
     ports:
       - "8083:8089"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysqldb:3306/kaddem_db
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: 0000
+      SPRING_APPLICATION_JSON: '{
+        "spring.datasource.url" : "jdbc:mysql://mysqldb:3306/kaddem_db?&createDatabaseIfNotExist=true"
+        "spring.datasource.username" : "root"
+        "spring.datasource.password" : "0000"
+        "spring.jpa.show-sql" : "true"
+        "spring.jpa.hibernate.ddl-auto" : "update"
+        "spring.jpa.properties.hibernate.dialect" : "org.hibernate.dialect.MySQL5Dialect"
+      }'
     stdin_open: true
     tty: true
 
